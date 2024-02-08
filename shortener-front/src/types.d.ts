@@ -1,8 +1,8 @@
 export interface Link {
-  _id: string,
-  shortUrl: string,
-  originalUrl: string
+  originalUrl: string;
+  id: string;
+  shortUrl: string;
 }
 export interface ApiLink {
-  shortUrl: string
+  shortUrl: string;
 }

@@ -1,56 +1,56 @@
 import TextField from '@mui/material/TextField';
-import { Button, FormGroup, Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import axiosApi from '../../axiosApi';
-import { useMutation } from '@tanstack/react-query';
 
 const Home = () => {
-  const [originalUrl, setOriginalUrl]  = useState('');
-  // let shortUrl: ApiLink = {shortUrl: ''};
-
-  const onFormSubmit = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [originalUrl, setOriginalUrl] = useState({
+    originalUrl: ''
+  });
+  const [shortUrl, setShortUrl] = useState('');
+  const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const mutation = useMutation({
-      mutationFn: async(originalUrl)=> {
-        await axiosApi.post('/links', originalUrl);
-      }
-    })
-    await mutation.mutateAsync();
-  }
+    const newLink = await axiosApi.post('/links', originalUrl);
+    if (!newLink) {
+      setShortUrl('Данная ссылка не найдена!');
+    }
+    setShortUrl(newLink.data.shortUrl);
+    setOriginalUrl({
+      originalUrl: ''
+    });
+  };
   const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target;
-    setOriginalUrl(value);
+    setOriginalUrl({
+      originalUrl: value
+    });
   };
 
   return (
     <>
-      <FormGroup
-        sx={{
-          '& .MuiTextField-root': { m: 1, width: '100ch' },
-        }}
+      <form
+        style={{marginTop: '50px'}}
         onSubmit={onFormSubmit}
       >
         <Grid container direction="column" alignContent="center" spacing={2}>
-            <TextField
-              required
-              id="outlined-required"
-              label="Enter original URL"
-              defaultValue="http://"
-              value={originalUrl}
-              onChange={inputChangeHandler}
-            />
-            <Button type="submit" variant="outlined" sx={{width:'90px',margin: 'auto'}}>Shorten</Button>
+          <TextField
+            fullWidth
+            required
+            id="outlined-required"
+            type="url"
+            label="Enter original URL"
+            value={originalUrl.originalUrl}
+            onChange={inputChangeHandler}
+          />
         </Grid>
-      </FormGroup>
-      <Grid>
-        <Typography  sx={{mt:5}}>
-          Your link now looks like this:
-        </Typography>
-        <Typography variant="h4">
-          <a href="/" target="_blank">pltcm ,eltn ccskrf</a>
-        </Typography>
-      </Grid>
-
+        <Button type="submit" variant="outlined" sx={{width: '90px', margin: '10px auto'}}>Shorten</Button>
+      </form>
+      <Typography sx={{mt: 5}}>
+        Your link now looks like this:
+      </Typography>
+      <Typography variant="h4">
+        <a href={shortUrl} target="_blank">{shortUrl}</a>
+      </Typography>
     </>
   );
 };

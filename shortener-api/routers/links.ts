@@ -5,24 +5,26 @@ import {ApiLink} from "../types";
 
 const linksRouter = express.Router();
 linksRouter.get('/:shortUrl', async (req, res) => {
-    try{
+    console.log(req.params)
+    try {
         const selectLink = await Link.findOne({shortUrl: req.params.shortUrl});
-        if(selectLink === null) {
-            res.status(404).send({error:'Link not found!'});
-        }else{
+        console.log(selectLink);
+        if (selectLink === null) {
+            res.status(404).send({error: 'Link not found!'});
+        } else {
             res.status(301).redirect(selectLink.originalUrl);
         }
 
-    }catch (e) {
+    } catch (e) {
         return res.sendStatus(500);
     }
 });
 linksRouter.post('/', async (req, res) => {
     let length = '6';
-    let uniqueUrl: string = '';
-    const uniqueUrlSet = new Set();
 
-    function generateUniqueUrl(length:string) {
+    const generateUniqueUrl = (length: string) => {
+        let uniqueUrl: string = '';
+
         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         for (let i = 0; i < parseInt(length); i++) {
@@ -31,24 +33,22 @@ linksRouter.post('/', async (req, res) => {
         }
         return uniqueUrl;
     }
-    function isUniqueIdUnique(uniqueId:string) {
-        return !uniqueUrlSet.has(uniqueId);
-    }
-    while (!isUniqueIdUnique(uniqueUrl)) {
-        uniqueUrl = generateUniqueUrl(length);
-    }
-    uniqueUrlSet.add(uniqueUrl);
-    try{
-    const baseUrl = 'httsp://localhost/';
-    const originalLink = req.body.originalUrl;
-    const generatedLink: string = baseUrl+uniqueUrl;
-    const linkData: ApiLink = {
-        originalUrl: originalLink,
-        shortUrl: generatedLink,
-    }
+
+    try {
+        const baseUrl = 'http://localhost:8000/';
+        const code = generateUniqueUrl(length);
+        const originalLink = req.body.originalUrl;
+        const generatedLink: string = baseUrl + code;
+        const linkData: ApiLink = {
+            originalUrl: originalLink,
+            shortUrl: code,
+        }
         const link = new Link(linkData);
         await link.save();
-        return res.send(linkData);
+        return res.send({
+            originalUrl: originalLink,
+            shortUrl: generatedLink,
+        });
     } catch (e) {
         return res.status(400).send('Error');
     }
