@@ -7,10 +7,12 @@ const linksRouter = express.Router();
 linksRouter.get('/:shortUrl', async (req, res) => {
     try{
         const selectLink = await Link.findOne({shortUrl: req.params.shortUrl});
-        if(!selectLink) {
-            res.send('Link not found!');
+        if(selectLink === null) {
+            res.status(404).send({error:'Link not found!'});
+        }else{
+            res.status(301).redirect(selectLink.originalUrl);
         }
-        res.send(selectLink);
+
     }catch (e) {
         return res.sendStatus(500);
     }
@@ -39,7 +41,7 @@ linksRouter.post('/', async (req, res) => {
     try{
     const baseUrl = 'httsp://localhost/';
     const originalLink = req.body.originalUrl;
-    const generatedLink: string = baseUrl ? `https://${baseUrl}/${uniqueUrl}` : `https://${req.headers.host}/${gid}`
+    const generatedLink: string = baseUrl+uniqueUrl;
     const linkData: ApiLink = {
         originalUrl: originalLink,
         shortUrl: generatedLink,
