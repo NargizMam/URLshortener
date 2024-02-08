@@ -4,5 +4,5 @@ export interface Link {
   originalUrl: string
 }
 export interface ApiLink {
-  originalUrl: string
+  shortUrl: string
 }
