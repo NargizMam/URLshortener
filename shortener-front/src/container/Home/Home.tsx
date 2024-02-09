@@ -27,9 +27,8 @@ const Home = () => {
   };
 
   return (
-    <>
+    <Grid style={{margin: '50px auto', width: '60%', textAlign: 'center'}}>
       <form
-        style={{marginTop: '50px'}}
         onSubmit={onFormSubmit}
       >
         <Grid container direction="column" alignContent="center" spacing={2}>
@@ -45,13 +44,15 @@ const Home = () => {
         </Grid>
         <Button type="submit" variant="outlined" sx={{width: '90px', margin: '10px auto'}}>Shorten</Button>
       </form>
-      <Typography sx={{mt: 5}}>
-        Your link now looks like this:
-      </Typography>
-      <Typography variant="h4">
-        <a href={shortUrl} target="_blank">{shortUrl}</a>
-      </Typography>
-    </>
+      {shortUrl ? (<Grid>
+        <Typography sx={{mt: 5}}>
+          Your link now looks like this:
+        </Typography>
+        <Typography variant="h4">
+          <a href={shortUrl} target="_blank">{shortUrl}</a>
+        </Typography>
+      </Grid>) : null}
+    </Grid>
   );
 };
 
