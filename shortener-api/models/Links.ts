@@ -9,7 +9,8 @@ const LinkSchema = new Schema({
     },
     shortUrl: {
         type: String,
-        required: false
+        required: false,
+        unique: true
     }
 });
 
